@@ -14,24 +14,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id          String   @id @default(cuid())
-  googleId    String   @unique
-  email       String
-  name        String?
-  role        String   // "seller" | "buyer"
+  id           String   @id @default(cuid())
+  googleId     String?  @unique
+  email        String   @unique
+  name         String?
+  role         String   @default("buyer") // "seller" | "buyer"
   refreshToken String? // encrypted
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // relations
+  // relations
+  appointmentsAsSeller Appointment[]  @relation("sellerAppointments")
+  appointmentsAsBuyer  Appointment[]  @relation("buyerAppointments")
+  availabilities       Availability[]
 }
 
 model Appointment {
-  id           String   @id @default(cuid())
-  sellerId     String
-  buyerId      String
-  start        DateTime
-  end          DateTime
-  googleEventId String? // event id on Google Calendar
-  createdAt    DateTime @default(now())
+  id            String   @id @default(cuid())
+  seller        User     @relation("sellerAppointments", fields: [sellerId], references: [id])
+  sellerId      String
+  buyer         User     @relation("buyerAppointments", fields: [buyerId], references: [id])
+  buyerId       String
+  start         DateTime
+  end           DateTime
+  status        String   @default("reserved") // reserved | confirmed | cancelled
+  googleEventId String?
+  hangoutLink   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([sellerId, start])
+  @@index([sellerId])
+  @@index([buyerId])
+}
+
+model Availability {
+  id        String   @id @default(cuid())
+  seller    User     @relation(fields: [sellerId], references: [id])
+  sellerId  String
+  start     DateTime
+  end       DateTime
+  createdAt DateTime @default(now())
+
+  @@index([sellerId])
 }
