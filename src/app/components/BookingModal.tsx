@@ -48,7 +48,7 @@ export default function BookingModal({
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white w-96 rounded-xl p-6">
         <h2 className="text-lg font-medium text-google-blue mb-2">Confirm Booking</h2>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-sm text-black mb-4">
           {new Date(start).toLocaleString()} — {new Date(end).toLocaleTimeString()}
         </p>
         <label className="text-xs text-gray-500">Buyer ID (paste for testing)</label>
