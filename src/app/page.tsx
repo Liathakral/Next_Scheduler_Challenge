@@ -1,17 +1,28 @@
 // src/app/page.tsx
 import Link from "next/link";
 
+async function getBaseUrl() {
+  if (process.env.VERCEL_URL) {
+    // Deployed on Vercel
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  // Local dev
+  return "http://localhost:3000";
+}
+
 async function getSellers() {
-const res = await fetch("http://localhost:3000/api/sellers", { cache: "no-store" });
-    console.log(res);
+  const baseUrl = await getBaseUrl();
+
+  const res = await fetch(`${baseUrl}/api/sellers`, { cache: "no-store" });
+
   if (!res.ok) {
     const txt = await res.text();
-  
     console.error("sellers fetch failed", txt);
     return [];
   }
   return res.json();
 }
+
 
 export default async function Home() {
   const sellers: { id: string; name?: string; email: string }[] = await getSellers();
